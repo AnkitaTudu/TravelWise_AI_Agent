@@ -1,0 +1,10 @@
+{
+  "description": "Explore India's hidden gems with an AI-powered travel planner that offers personalized itineraries, real-time weather updates, and local insights.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
