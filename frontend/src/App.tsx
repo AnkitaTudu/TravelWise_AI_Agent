@@ -4,26 +4,32 @@ import Navbar from './components/Navbar';
 import AiTripPlanner from './components/AiTripPlanner';
 import GeneratedPlan from './components/GeneratedPlan';
 import type { PlanData } from './components/AiTripPlanner';
-import { Routes, Route, Navigate } from "react-router-dom";
 import Destination from "./pages/destination";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 
 
 type View = 'home' | 'planner' | 'generated';
 
 export default function App() {
+  const router = useNavigate();
   const [view, setView] = useState<View>('home');
   const [generatedPlan, setGeneratedPlan] = useState<PlanData | null>(null);
 
   const navigateTo = (v: string) => {
     setView(v as View);
+
+    if (v === 'home') router("/");
+    else if (v === 'planner') router("/planner");
+    else if (v === 'generated') router("/generated");
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handlePlanGenerated = (plan: PlanData) => {
-    setGeneratedPlan(plan);
-    setView('generated');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  setGeneratedPlan(plan);
+  setView("generated");
+  router("/generated");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
   
 
   return (

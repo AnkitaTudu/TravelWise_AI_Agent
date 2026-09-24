@@ -56,10 +56,13 @@ export default function Navbar({ onNavigate, currentView }: NavbarProps) {
             >
               AI Planner
             </button>
-            <button className="text-sm font-500 text-[#6B7280] hover:text-[#1F2937] transition-colors duration-200">
-              Destinations
-            </button>
-          </div>
+            <button
+  onClick={() => onNavigate("home")}
+  className="text-sm font-500 text-[#6B7280] hover:text-[#1F2937] transition-colors duration-200"
+>
+  Destinations
+</button>
+</div>
 
           {/* Actions */}
           <div className="hidden md:flex items-center gap-3">

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { PlanData } from './AiTripPlanner';
+import { destinations } from "../data/destinations";
 import {
   Sparkles,
   Sun,
@@ -17,6 +18,7 @@ import {
   ArrowLeft,
   Download,
   Share2,
+  Calendar,
 } from 'lucide-react';
 
 const itineraryData: Record<string, DayPlan[]> = {
@@ -118,27 +120,29 @@ interface GeneratedPlanProps {
   onBack: () => void;
 }
 
+
 export default function GeneratedPlan({ plan, onBack }: GeneratedPlanProps) {
+
   const [expandedDay, setExpandedDay] = useState<number | null>(0);
   const days = itineraryData.default.slice(0, Math.min(plan.days, 3));
-
-  const packingList = [
-    'Light cotton clothing (multiple layers)',
-    'Comfortable walking shoes',
-    'Sunscreen SPF 50+',
-    'Rain jacket or poncho',
-    'Reusable water bottle',
-    'Power bank & travel adapter',
-    'First aid kit & prescription meds',
-    'Offline maps downloaded',
-  ];
-
+const destinationData =
+  destinations.find(
+    (d) => d.slug === plan.destination.toLowerCase()
+  ) || destinations[0];
   const emergencyContacts = [
-    { label: 'Tourist Helpline', number: '1800-111-363', icon: Phone },
-    { label: 'Police Emergency', number: '100', icon: Phone },
-    { label: 'Ambulance', number: '108', icon: Phone },
-    { label: 'Women Helpline', number: '1091', icon: Phone },
-  ];
+  {
+    label: "Police",
+    number: destinationData.emergency.police,
+  },
+  {
+    label: "Ambulance",
+    number: destinationData.emergency.ambulance,
+  },
+  {
+    label: "Coast Guard",
+    number: destinationData.emergency.coastGuard,
+  },
+];
 
   const weather = [
     { day: 'Day 1', temp: '26°C', icon: Sun, condition: 'Sunny' },
@@ -157,8 +161,8 @@ export default function GeneratedPlan({ plan, onBack }: GeneratedPlanProps) {
       {/* Hero banner */}
       <div className="relative h-48 lg:h-64 overflow-hidden bg-[#1a1a16]">
         <img
-          src="https://images.unsplash.com/photo-1638641088375-ddf026f736f4?w=1400&h=400&fit=crop&auto=format"
-          alt="Scenic travel destination"
+          src={destinationData.heroImage}
+          alt={plan.destination}
           className="w-full h-full object-cover opacity-70"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -175,11 +179,14 @@ export default function GeneratedPlan({ plan, onBack }: GeneratedPlanProps) {
               <span className="text-xs text-[#D8B36A] font-600 tracking-wide">AI Generated Itinerary</span>
             </div>
             <h1 className="text-3xl lg:text-4xl font-800 text-white">
-              {plan.destination} · {plan.days} Days
+              {destinationData.name} · {plan.days} Days
             </h1>
             <p className="text-white/60 text-sm mt-1">
-              {plan.companions} · {plan.style} · {plan.budget}/day
+              {plan.companions} · {plan.month} · {plan.budget}/day
             </p>
+            <p className="text-white/75 text-sm mt-3 max-w-2xl">
+  {destinationData.description}
+</p>
           </div>
         </div>
 
@@ -198,9 +205,19 @@ export default function GeneratedPlan({ plan, onBack }: GeneratedPlanProps) {
         {/* Budget summary */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {[
-            { label: 'Daily Budget', value: plan.budget, icon: Wallet, color: '#D97A52' },
+            {
+  label: 'Estimated Cost',
+  value:
+    plan.budget.includes("Budget")
+      ? destinationData.budget.budget
+      : plan.budget.includes("Mid")
+      ? destinationData.budget.midRange
+      : destinationData.budget.luxury,
+  icon: Wallet,
+  color: '#D97A52',
+},
             { label: 'Total Days', value: `${plan.days} days`, icon: Sun, color: '#D8B36A' },
-            { label: 'Travel Style', value: plan.style, icon: Star, color: '#6D8F72' },
+            { label: 'Month', value: plan.month, icon: Calendar, color: '#6D8F72' },
             { label: 'Companions', value: plan.companions, icon: MapPin, color: '#8B7BC8' },
           ].map((item) => {
             const Icon = item.icon;
@@ -305,18 +322,22 @@ export default function GeneratedPlan({ plan, onBack }: GeneratedPlanProps) {
             Food Recommendations
           </h2>
           <div className="space-y-3">
-            {foodRecs.map((f) => (
+            {destinationData.food.map((f) => (
               <div key={f.name} className="flex items-center gap-4 p-3 rounded-xl hover:bg-[#F7F6F3] transition-colors">
-                <div className="w-9 h-9 rounded-xl bg-[#FDF4EF] flex items-center justify-center flex-shrink-0">
-                  <Utensils size={14} className="text-[#D97A52]" />
-                </div>
+                <img
+  src={f.image}
+  alt={f.name}
+  className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+/>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-700 text-[#1F2937]">{f.name}</p>
-                  <p className="text-xs text-[#9CA3AF]">{f.type} · {f.note}</p>
+                  <p className="text-xs text-[#9CA3AF]">
+  Local Goan Specialty
+</p>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
-                  <Star size={11} className="fill-[#D8B36A] text-[#D8B36A]" />
-                  <span className="text-xs font-700 text-[#1F2937]">{f.rating}</span>
+                <Star size={11} className="fill-[#D8B36A] text-[#D8B36A]" />
+<span className="text-xs font-700 text-[#1F2937]">4.8</span>
                 </div>
               </div>
             ))}
@@ -332,7 +353,7 @@ export default function GeneratedPlan({ plan, onBack }: GeneratedPlanProps) {
               Packing Checklist
             </h2>
             <div className="space-y-2">
-              {packingList.map((item, i) => (
+              {destinationData.packing.map((item) => (
                 <label key={item} className="flex items-start gap-3 cursor-pointer group">
                   <input type="checkbox" className="mt-0.5 accent-[#6D8F72] flex-shrink-0" />
                   <span className="text-sm text-[#6B7280] group-hover:text-[#1F2937] transition-colors">{item}</span>
