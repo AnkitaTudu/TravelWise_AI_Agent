@@ -48,6 +48,8 @@ def travel_agent(city):
         "city": weather["city"],
 
         "temperature": weather["temperature"],
+        
+        "feels_like": weather["feels_like"],
 
         "condition": weather["condition"],
 

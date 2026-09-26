@@ -27,9 +27,11 @@ def get_weather(city):
         weather_data = {
             "city": data["name"],
             "temperature": data["main"]["temp"],
+            "feels_like": data["main"]["feels_like"],
             "humidity": data["main"]["humidity"],
             "wind": data["wind"]["speed"],
-            "condition": data["weather"][0]["main"]
+            "condition": data["weather"][0]["main"],
+            
         }
 
         return weather_data

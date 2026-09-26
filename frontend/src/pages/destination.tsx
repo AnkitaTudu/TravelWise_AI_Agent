@@ -3,6 +3,8 @@ import { destinations } from "../data/destinations";
 import TravelSafetyCard from "../components/TravelSafetyCard";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useState, useEffect } from "react";
+import { getWeather } from "../api/travelApi";
 
 export default function Destination() {
   const { city } = useParams();
@@ -11,6 +13,24 @@ export default function Destination() {
     (d) => d.slug.toLowerCase() === city?.toLowerCase(),
   );
   const navigate = useNavigate();
+  const [weather, setWeather] = useState<any>(null);
+const [loadingWeather, setLoadingWeather] = useState(true);
+useEffect(() => {
+  if (!destination) return;
+
+  async function fetchWeather() {
+    try {
+      const data = await getWeather(destination!.name);
+      setWeather(data);
+    } catch (error) {
+      console.error("Failed to load weather:", error);
+    } finally {
+      setLoadingWeather(false);
+    }
+  }
+
+  fetchWeather();
+}, [destination]);
 
   if (!destination) {
     return (
@@ -263,23 +283,33 @@ export default function Destination() {
               Current Weather
             </p>
 
-            <h2 className="text-5xl font-bold mt-5">31°</h2>
+            <h2 className="text-5xl font-bold mt-5">
+  {loadingWeather ? "--" : `${weather?.temperature}°`}
+</h2>
 
-            <p className="text-gray-300 mt-2">Sunny</p>
+           <p className="text-gray-300 mt-2">
+  {loadingWeather ? "Loading..." : weather?.condition}
+</p> 
 
             <div className="grid grid-cols-3 gap-4 mt-10">
               <div className="text-center">
-                <h3 className="font-bold text-xl">78%</h3>
+                <h3 className="font-bold text-xl">
+  {loadingWeather ? "--" : `${weather?.humidity}%`}
+</h3>
                 <p className="text-xs text-gray-400">Humidity</p>
               </div>
 
               <div className="text-center">
-                <h3 className="font-bold text-xl">18 km/h</h3>
+                <h3 className="font-bold text-xl">
+  {loadingWeather ? "--" : `${weather?.wind} km/h`}
+</h3>
                 <p className="text-xs text-gray-400">Wind</p>
               </div>
 
               <div className="text-center">
-                <h3 className="font-bold text-xl">29°</h3>
+                <h3 className="font-bold text-xl">
+  {loadingWeather ? "--" : `${weather?.feels_like}°`}
+</h3>
                 <p className="text-xs text-gray-400">Feels Like</p>
               </div>
             </div>

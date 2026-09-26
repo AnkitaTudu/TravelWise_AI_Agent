@@ -21,6 +21,10 @@ def generate_trip():
     result = travel_agent(destination)
 
     return jsonify(result)
+@app.route("/weather/<city>", methods=["GET"])
+def get_weather_data(city):
+    result = travel_agent(city)
+    return jsonify(result)
 
 
 @app.route("/test-weather/<city>")

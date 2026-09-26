@@ -4,7 +4,9 @@ export async function generateTrip(plan: {
   budget: string;
   month: string;
   companions: string;
-}) {
+}) 
+
+{
   console.log("Sending plan:", JSON.stringify(plan, null, 2));
   const response = await fetch("http://127.0.0.1:5000/generate-trip", {
     method: "POST",
@@ -16,6 +18,17 @@ export async function generateTrip(plan: {
 
   if (!response.ok) {
     throw new Error("Failed to generate trip");
+  }
+
+  return response.json();
+}
+export async function getWeather(city: string) {
+  const response = await fetch(
+    `http://127.0.0.1:5000/weather/${encodeURIComponent(city)}`
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch weather");
   }
 
   return response.json();
