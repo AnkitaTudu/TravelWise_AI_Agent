@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { generateTrip } from "../api/travelApi";
+import { useLocation } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import {
   Sparkles,
   MapPin,
@@ -30,7 +33,23 @@ export default function AiTripPlanner({ onPlanGenerated }: AiTripPlannerProps) {
   console.log("Planner rendered");
   console.log("Before return");
   const [step, setStep] = useState(0);
-  const [destination, setDestination] = useState('');
+  const location = useLocation();
+  const cameFromDestination = Boolean(location.state?.destination);
+  useEffect(() => {
+  if (location.state?.destination) {
+    setChatMessages([
+      {
+        role: "ai",
+        text: `${location.state.destination} is a brilliant choice! 🌿 How many days are you planning to spend there?`,
+      },
+    ]);
+
+    setStep(1);
+  }
+}, [location.state]);
+  const [destination, setDestination] = useState(
+  location.state?.destination || ""
+);
   const quickPicks = [
   "Goa",
   "Kerala",
@@ -64,6 +83,7 @@ const [month, setMonth] = useState("");
       text: 'Hi there! 👋 I\'m your TravelWise AI. Tell me — which part of India are you dreaming of exploring?',
     },
   ]);
+  const navigate = useNavigate();
 
  
   const handleNext = async () => {
@@ -96,9 +116,17 @@ const [month, setMonth] = useState("");
       ]);
       setStep(4);
    } else if (step === 4 && companions) {
+  const planToSend = {
+    destination,
+    days,
+    budget,
+    month,
+    companions,
+  };
+
   setChatMessages((m) => [
     ...m,
-    { role: "user", text: companions },
+    { role: "user", text: planToSend.companions },
     {
       role: "ai",
       text: "Perfect! I have everything I need to craft your dream itinerary. Generating your personalised plan now...",
@@ -108,23 +136,11 @@ const [month, setMonth] = useState("");
   setGenerating(true);
 
   try {
-    const result = await generateTrip({
-      destination,
-      days,
-      budget,
-      month,
-      companions,
-    });
+    const result = await generateTrip(planToSend);
 
     console.log(result);
 
-    onPlanGenerated({
-      destination,
-      days,
-      budget,
-      month,
-      companions,
-    });
+    onPlanGenerated(planToSend);
 
   } catch (error) {
     console.error("Backend Error:", error);
@@ -132,7 +148,8 @@ const [month, setMonth] = useState("");
   } finally {
     setGenerating(false);
   }
-}
+    }
+  };
 
   const steps = [
     { label: 'Destination', icon: MapPin },
@@ -148,43 +165,51 @@ const [month, setMonth] = useState("");
 
     <div className="min-h-screen bg-[#F7F6F3] flex flex-col">
       {/* Header */}
-      <div className="bg-[#FCFBF8] border-b border-[#E8E5DF] px-6 py-4">
-        <div className="max-w-3xl mx-auto flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#FDF4EF] flex items-center justify-center">
-            <Sparkles size={16} className="text-[#D97A52]" />
-          </div>
-          <div>
-            <h1 className="text-[15px] font-700 text-[#1F2937]">TravelWise AI Planner</h1>
-            <p className="text-xs text-[#9CA3AF]">Personalised trip generation · Powered by TravelWise AI Engine</p>
-          </div>
-        </div>
-      </div>
+      <header className="bg-[#FCFBF8] border-b border-[#E8E5DF]">
+        <div className="max-w-3xl mx-auto px-6 py-4">
+         <div className="flex items-center gap-3">
 
-      {/* Progress bar */}
-      <div className="bg-[#FCFBF8] border-b border-[#E8E5DF]">
-        <div className="max-w-3xl mx-auto px-6 py-3">
-          <div className="flex items-center gap-1">
+  <button
+    onClick={() => {
+      if (cameFromDestination) {
+        navigate(`/destination/${location.state.destination.toLowerCase()}`);
+      } else {
+        navigate("/");
+      }
+    }}
+    className="w-9 h-9 rounded-xl border border-[#E8E5DF] bg-white hover:bg-[#F7F6F3] flex items-center justify-center transition"
+  >
+    <ArrowLeft size={18} />
+  </button>
+
+  <div className="flex items-start gap-3 min-w-0"></div>
+        </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="max-w-3xl mx-auto px-6 pb-3">
+          <div className="flex items-center gap-1 min-w-0">
             {steps.map((s, i) => {
               const Icon = s.icon;
               return (
-                <div key={s.label} className="flex items-center gap-1 flex-1">
-                  <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-600 transition-all duration-300 ${
+                <div key={s.label} className="flex items-center gap-1 flex-1 min-w-0">
+                  <div className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-600 whitespace-nowrap transition-all duration-300 ${
                     i <= step
                       ? 'bg-[#D97A52] text-white'
                       : 'text-[#9CA3AF]'
                   }`}>
-                    <Icon size={11} />
+                    <Icon size={11} className="flex-shrink-0" />
                     <span className="hidden sm:inline">{s.label}</span>
                   </div>
                   {i < steps.length - 1 && (
-                    <div className={`h-px flex-1 transition-all duration-500 ${i < step ? 'bg-[#D97A52]' : 'bg-[#E8E5DF]'}`} />
+                    <div className={`h-px flex-1 min-w-[8px] transition-all duration-500 ${i < step ? 'bg-[#D97A52]' : 'bg-[#E8E5DF]'}`} />
                   )}
                 </div>
               );
             })}
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Chat */}
       <div className="flex-1 overflow-y-auto px-6 py-8">
@@ -216,7 +241,7 @@ const [month, setMonth] = useState("");
             <div className="flex gap-3 animate-fade-in">
               <div className="w-8 h-8 rounded-xl bg-[#FDF4EF] border border-[#F0C4AE] flex items-center justify-center flex-shrink-0">
                 <Loader size={14} className="text-[#D97A52] animate-spin" />
-              </div>
+              </div >
               <div className="bg-[#FCFBF8] border border-[#E8E5DF] px-4 py-3 rounded-2xl rounded-tl-sm">
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#D97A52] animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -230,7 +255,7 @@ const [month, setMonth] = useState("");
         </div>
       </div>
 
-      {/* Input area */}
+     {/* Input area */}
       {!generating && (
         <div className="border-t border-[#E8E5DF] bg-[#FCFBF8] px-6 py-5">
           <div className="max-w-3xl mx-auto">
@@ -388,4 +413,4 @@ const [month, setMonth] = useState("");
       )}
     </div>
   );
-}}
+}

@@ -5,15 +5,17 @@ import AiTripPlanner from './components/AiTripPlanner';
 import GeneratedPlan from './components/GeneratedPlan';
 import type { PlanData } from './components/AiTripPlanner';
 import Destination from "./pages/destination";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate, useNavigate, useLocation } from "react-router-dom";
 
 
 type View = 'home' | 'planner' | 'generated';
 
 export default function App() {
   const router = useNavigate();
+   const location = useLocation();
   const [view, setView] = useState<View>('home');
   const [generatedPlan, setGeneratedPlan] = useState<PlanData | null>(null);
+ 
 
   const navigateTo = (v: string) => {
     setView(v as View);
@@ -25,18 +27,24 @@ export default function App() {
   };
 
   const handlePlanGenerated = (plan: PlanData) => {
-  setGeneratedPlan(plan);
-  setView("generated");
-  router("/generated");
-  window.scrollTo({ top: 0, behavior: "smooth" });
-};
+    setGeneratedPlan(plan);
+    setView("generated");
+    router("/generated");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
   
 
   return (
-    <div className="min-h-screen bg-[#F7F6F3]" style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
-      <Navbar onNavigate={navigateTo} currentView={view} />
+   <div className="min-h-screen bg-[#F7F6F3]" style={{ fontFamily: "'Plus Jakarta Sans', system-ui, sans-serif" }}>
 
-      <Routes>
+  {location.pathname !== "/planner" && location.pathname !== "/generated" && (
+    <Navbar
+      onNavigate={navigateTo}
+      currentView={view}
+    />
+  )}
+
+  <Routes>
   <Route
     path="/"
     element={<Home onNavigatePlanner={() => navigateTo("planner")} />}

@@ -40,6 +40,19 @@ export interface Destination {
   }[];
 
   activities: string[];
+  airQuality: {
+  value: number;
+  status: string;
+};
+crowd: {
+  level: string;
+  bestTime: string;
+};
+
+safety: {
+  score: number;
+  status: string;
+};
 
   attractions: string[];
 
@@ -122,6 +135,20 @@ export const destinations: Destination[] = [
       "Scuba Diving",
       "Sunset Cruise",
     ],
+
+    airQuality: {
+  value: 42,
+  status: "Good",
+},
+crowd: {
+  level: "Moderate",
+  bestTime: "Morning",
+},
+
+safety: {
+  score: 8.8,
+  status: "Safe",
+},
 
     attractions: [
       "Baga Beach",

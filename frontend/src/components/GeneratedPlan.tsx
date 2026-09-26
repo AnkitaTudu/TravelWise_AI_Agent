@@ -159,7 +159,7 @@ const destinationData =
   return (
     <div className="min-h-screen bg-[#F7F6F3]">
       {/* Hero banner */}
-      <div className="relative h-48 lg:h-64 overflow-hidden bg-[#1a1a16]">
+      <div className="relative h-72 lg:h-96 overflow-hidden bg-[#1a1a16]">
         <img
           src={destinationData.heroImage}
           alt={plan.destination}
@@ -253,6 +253,61 @@ const destinationData =
             })}
           </div>
         </div>
+
+     {/* Travel Insights */}
+<div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
+  {/* AQI */}
+  <div className="bg-[#FCFBF8] border border-[#E8E5DF] rounded-2xl p-5">
+    <div className="flex items-center gap-2 mb-3">
+      <span className="text-xl">🌿</span>
+      <h3 className="font-700 text-[#1F2937]">Air Quality</h3>
+    </div>
+
+    <p className="text-3xl font-800 text-[#2E7D32]">
+      {destinationData.airQuality.value}
+    </p>
+
+    <p className="text-sm font-600 text-[#2E7D32]">
+      {destinationData.airQuality.status}
+    </p>
+
+    <p className="text-xs text-[#9CA3AF] mt-2">
+      Outdoor activities are safe.
+    </p>
+  </div>
+
+</div>   
+{/* Crowd */}
+<div className="bg-[#FCFBF8] border border-[#E8E5DF] rounded-2xl p-5">
+  <div className="flex items-center gap-2 mb-3">
+    <span className="text-xl">👥</span>
+    <h3 className="font-700 text-[#1F2937]">Crowd Level</h3>
+  </div>
+
+  <p className="text-3xl font-800 text-[#D97A52]">
+    {destinationData.crowd.level}
+  </p>
+
+  <p className="text-sm text-[#6B7280]">
+    Best time: {destinationData.crowd.bestTime}
+  </p>
+</div>
+{/* Safety */}
+<div className="bg-[#FCFBF8] border border-[#E8E5DF] rounded-2xl p-5">
+  <div className="flex items-center gap-2 mb-3">
+    <span className="text-xl">🛡</span>
+    <h3 className="font-700 text-[#1F2937]">Safety Score</h3>
+  </div>
+
+  <p className="text-3xl font-800 text-[#2E7D32]">
+    {destinationData.safety.score}/10
+  </p>
+
+  <p className="text-sm font-600 text-[#2E7D32]">
+    {destinationData.safety.status}
+  </p>
+</div>
 
         {/* Itinerary timeline */}
         <div>

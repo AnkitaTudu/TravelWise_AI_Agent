@@ -23,5 +23,9 @@ def generate_trip():
     return jsonify(result)
 
 
+@app.route("/test-weather/<city>")
+def test_weather(city):
+    return jsonify(travel_agent(city))
+
 if __name__ == "__main__":
     app.run(debug=True)
