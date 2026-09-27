@@ -14,6 +14,7 @@ export default function Destination() {
   );
   const navigate = useNavigate();
   const [weather, setWeather] = useState<any>(null);
+  const [weatherError, setWeatherError] = useState("");
 const [loadingWeather, setLoadingWeather] = useState(true);
 useEffect(() => {
   if (!destination) return;
@@ -24,6 +25,7 @@ useEffect(() => {
       setWeather(data);
     } catch (error) {
       console.error("Failed to load weather:", error);
+      setWeatherError("Live weather is currently unavailable.");
     } finally {
       setLoadingWeather(false);
     }
@@ -51,7 +53,7 @@ useEffect(() => {
           className="w-full h-full object-cover"
         />
         <button
-  onClick={() => navigate(-1)}
+  onClick={() => navigate("/")}
   className="absolute top-6 left-6 z-20 w-11 h-11 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition flex items-center justify-center"
 >
   <ArrowLeft size={20} />
@@ -263,10 +265,7 @@ useEffect(() => {
                 </h3>
 
                 <p className="mt-2 text-gray-700 leading-7">
-                  Travel safely. Watch your belongings in crowded areas, follow
-                  local guidelines, and avoid isolated places at night. During
-                  monsoon season, some beaches and water activities may remain
-                  closed.
+                  {destination.travelAdvisory}
                 </p>
               </div>
             </div>
@@ -282,6 +281,13 @@ useEffect(() => {
             <p className="uppercase tracking-widest text-xs text-gray-400">
               Current Weather
             </p>
+            {weatherError ?(
+              <div className=" mt-6">
+                <p className="text-red-300 font-medium">
+                  {weatherError}
+                </p>
+              </div>
+            ) : null}
 
             <h2 className="text-5xl font-bold mt-5">
   {loadingWeather ? "--" : `${weather?.temperature}°`}
@@ -404,7 +410,7 @@ rounded-2xl border border-[#EED9C6]
 p-6 mt-8"
         >
           <h3 className="text-xl font-700 text-[#1F2937]">
-            ✨ Plan your Goa Trip with AI
+            ✨ Plan this {destination.name} Trip
           </h3>
 
           <p className="text-[#6B7280] mt-2">
