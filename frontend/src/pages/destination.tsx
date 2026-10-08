@@ -7,6 +7,10 @@ import { useState, useEffect } from "react";
 import { getWeather } from "../api/travelApi";
 
 export default function Destination() {
+  const [liveAQI, setLiveAQI] = useState<{
+  value:number;
+  status:string;
+} | null>(null);
   const { city } = useParams();
 
   const destination = destinations.find(
@@ -16,6 +20,10 @@ export default function Destination() {
   const [weather, setWeather] = useState<any>(null);
   const [weatherError, setWeatherError] = useState("");
 const [loadingWeather, setLoadingWeather] = useState(true);
+const [liveCrowd, setLiveCrowd] = useState<{
+  level: string;
+  reason: string;
+} | null>(null);
 useEffect(() => {
   if (!destination) return;
 
@@ -33,6 +41,33 @@ useEffect(() => {
 
   fetchWeather();
 }, [destination]);
+useEffect(() => {
+  if (!destination) return;
+
+  const fetchAQI = async () => {
+    try {
+      const response = await fetch(
+ `http://127.0.0.1:5000/destination-insights/${destination.name}?month=${destination.bestTime}`
+)
+
+      const data = await response.json();
+
+      console.log("LIVE AQI:", data);
+
+      if (data.aqi) {
+        setLiveAQI(data.aqi);
+      }
+      if (data.crowd) {
+        setLiveCrowd(data.crowd);
+      }
+    } catch (error) {
+      console.error("AQI fetch error:", error);
+    }
+  };
+
+  fetchAQI();
+
+}, [destination]);
 
   if (!destination) {
     return (
@@ -41,6 +76,8 @@ useEffect(() => {
       </div>
     );
   }
+
+
 
   return (
     <div className="min-h-screen bg-[#F7F6F3]">
@@ -53,18 +90,18 @@ useEffect(() => {
           className="w-full h-full object-cover"
         />
         <button
-  onClick={() => navigate("/")}
-  className="absolute top-6 left-6 z-20 w-11 h-11 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition flex items-center justify-center"
+  onClick={() => {
+    console.log("Back button clicked");
+    navigate("/");
+  }}
+  className="absolute top-6 left-6 z-[9999] w-11 h-11 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white hover:bg-white/30 transition flex items-center justify-center"
 >
   <ArrowLeft size={20} />
 </button>
 
         <div className="absolute inset-0 bg-black/45" />
 
-        <div className="absolute bottom-12 left-10 lg:left-20 text-white max-w-3xl">
-          <div className="inline-flex items-center ...">
-            Powered by TravelWise AI Engine
-          </div>
+        <div className="absolute inset-0 flex flex-col items-start justify-center px-6 lg:px-16 text-white">
 
           <h1 className="text-4xl lg:text-6xl font-bold mt-3">
             {destination.name}
@@ -104,12 +141,13 @@ useEffect(() => {
           <div className="flex flex-wrap gap-3 mt-6">
             <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 border border-white/20">
               <span></span>
-              🌿 AQI {destination.airQuality.value} ·{" "}
-              {destination.airQuality.status}
+    🌿 AQI {liveAQI?.value ?? destination.airQuality.value} ·{" "}
+{liveAQI?.status ?? destination.airQuality.status}
             </div>
+    
 
             <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 border border-white/20">
-              👥 {destination.crowd.level} Crowd
+              👥 {liveCrowd?.level ?? destination.crowd.level} Crowd
             </div>
 
             <div className="flex items-center gap-2 rounded-full bg-white/15 backdrop-blur-md px-4 py-2 border border-white/20">

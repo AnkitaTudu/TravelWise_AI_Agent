@@ -27,6 +27,18 @@ export interface PlanData {
   budget: string;
   companions: string;
   month: string;
+  weather?: {
+  temperature:number;
+  feels_like:number;
+  humidity:number;
+  wind:number;
+  condition:string;
+
+  aqi?:{
+    value:number;
+    status:string;
+  };
+};
 }
 
 export default function AiTripPlanner({ onPlanGenerated }: AiTripPlannerProps) {
@@ -140,7 +152,10 @@ const [month, setMonth] = useState("");
 
     console.log(result);
 
-    onPlanGenerated(planToSend);
+    onPlanGenerated({
+  ...planToSend,
+  weather: result
+});
 
   } catch (error) {
     console.error("Backend Error:", error);

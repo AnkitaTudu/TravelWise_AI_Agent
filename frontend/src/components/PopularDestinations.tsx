@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Star, CloudSun, Calendar, Wallet, Utensils, ChevronRight } from 'lucide-react';
+import { Calendar, Wallet, Utensils, ChevronRight } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-//import { destinations } from "../data/destinations";
+import { destinations } from "../data/destinations";
 
-const destinations = [
+const olddestinations = [
   
 
   {
@@ -111,6 +111,10 @@ export default function PopularDestinations({ onNavigatePlanner }: PopularDestin
   return (
     <section className="py-16 lg:py-24 px-6 bg-[#F2F0EC]">
       <div className="max-w-7xl mx-auto">
+        <section
+  id="popular-destinations"
+  className="py-16 lg:py-24 px-6 bg-[#F2F0EC]"
+></section>
         {/* Header */}
         <div className="flex items-end justify-between mb-12 lg:mb-16 flex-wrap gap-4">
           <div>
@@ -134,19 +138,15 @@ export default function PopularDestinations({ onNavigatePlanner }: PopularDestin
               className="destination-card group rounded-2xl overflow-hidden bg-[#FCFBF8] border border-[#E8E5DF] hover:shadow-[0_16px_48px_rgba(0,0,0,0.12)] hover:-translate-y-1.5 transition-all duration-400 cursor-pointer"
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => {
-  if (d.name === "Goa") {
-    navigate("/destination/goa");
-  } else {
-    onNavigatePlanner();
-  }
+    onClick={() => {
+  navigate(`/destination/${d.slug}`);
 }}
             >
               {/* Image */}
               <div className="relative h-52 overflow-hidden bg-[#E8E5DF]">
                 <img
-                  src={d.img}
-                  alt={d.alt}
+                  src={d.heroImage}
+                  alt={d.state}
                   className="destination-img w-full h-full object-cover transition-transform duration-700 ease-out"
                 />
                 <div className="destination-overlay absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 transition-opacity duration-300" />
@@ -154,45 +154,44 @@ export default function PopularDestinations({ onNavigatePlanner }: PopularDestin
                 {/* Tag badge */}
                 <div className="absolute top-3.5 left-3.5">
                   <span className="px-2.5 py-1 rounded-full text-[10px] font-600 bg-white/90 backdrop-blur-sm text-[#1F2937] tracking-wide">
-                    {d.tag}
+                    {d.type}
                   </span>
                 </div>
 
                 {/* Weather chip */}
-                <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/30 backdrop-blur-sm">
-                  <CloudSun size={11} className="text-white" />
-                  <span className="text-[10px] font-600 text-white">{d.weather}</span>
-                </div>
-              </div>
+                <div className="absolute top-3.5 right-3.5">
+  <span className="px-2.5 py-1 rounded-full bg-black/30 backdrop-blur-sm text-[10px] font-600 text-white">
+    {d.bestTime}
+  </span>
+</div>
+                              </div>
 
               {/* Content */}
               <div className="p-5">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <h3 className="text-lg font-700 text-[#1F2937]">{d.name}</h3>
-                    <p className="text-xs text-[#9CA3AF] font-400">{d.region}</p>
+                    <p className="text-xs text-[#9CA3AF] font-400">{d.state}</p>
                   </div>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <Star size={13} className="fill-[#D8B36A] text-[#D8B36A]" />
-                    <span className="text-sm font-600 text-[#1F2937]">{d.rating}</span>
-                    <span className="text-xs text-[#9CA3AF]">({d.reviews})</span>
-                  </div>
+                  <span className="text-xs font-600 text-[#6D8F72] bg-[#F0F5F1] px-2 py-1 rounded-full">
+  {d.type}
+</span>
                 </div>
 
                 <p className="text-sm text-[#6B7280] leading-relaxed mb-4 line-clamp-2 font-400">
-                  {d.desc}
+                  {d.description}
                 </p>
 
                 {/* Info row */}
                 <div className="flex flex-wrap items-center gap-3 text-xs text-[#9CA3AF] mb-4">
                   <div className="flex items-center gap-1">
                     <Calendar size={11} />
-                    <span>{d.bestSeason}</span>
+                    <span>{d.bestTime}</span>
                   </div>
                   <span className="text-[#E8E5DF]">·</span>
                   <div className="flex items-center gap-1">
                     <Wallet size={11} />
-                    <span className="font-500 text-[#6B7280]">{d.budget}</span>
+                    <span className="font-500 text-[#6B7280]">{d.budget.budget}</span>
                   </div>
                 </div>
 
@@ -202,10 +201,10 @@ export default function PopularDestinations({ onNavigatePlanner }: PopularDestin
                   <div className="flex gap-1.5 flex-wrap">
                     {d.food.map((f) => (
                       <span
-                        key={f}
+                        key={f.name}
                         className="text-[10px] font-500 text-[#6B7280] px-2 py-0.5 rounded-full bg-[#F7F6F3]"
                       >
-                        {f}
+                        {f.name}
                       </span>
                     ))}
                   </div>

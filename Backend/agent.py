@@ -1,6 +1,8 @@
-from weather import get_weather, detect_state
+from weather import get_weather, detect_state, get_air_quality
 from mdp import get_best_action
 from utility import calculate_utility
+from itinerary import generate_itinerary
+
 
 
 def travel_agent(city):
@@ -13,11 +15,17 @@ def travel_agent(city):
             "error": "City not found!"
         }
 
+    aqi = get_air_quality(
+        weather["latitude"],
+        weather["longitude"]
+    )
+
     # Step 2: Detect current state
     state = detect_state(weather)
 
     # Step 3: MDP Decision
     action, reward = get_best_action(state)
+    itinerary = generate_itinerary(weather["city"], action)
 
     # Step 4: Utility Calculation
     utility = calculate_utility(action)
@@ -44,29 +52,18 @@ def travel_agent(city):
         advice = "Severe weather detected. Avoid travelling for your safety."
 
     return {
-
         "city": weather["city"],
-
         "temperature": weather["temperature"],
-        
         "feels_like": weather["feels_like"],
-
         "condition": weather["condition"],
-
         "humidity": weather["humidity"],
-
         "wind": weather["wind"],
-
         "state": state,
-
         "recommended_action": action,
-
         "title": title,
-
         "advice": advice,
-
         "reward": reward,
-
-        "utility": utility
-
+        "utility": utility,
+        "itinerary": itinerary,
+        "aqi": aqi,
     }
